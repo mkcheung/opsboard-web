@@ -1,8 +1,8 @@
+import { http } from "../api/http";
 import {
     getActiveBackend,
     getApiBaseUrl
 } from "./config/backend";
-import axios from 'axios';
 import { useState } from 'react';
 
 const Login = () => {
@@ -20,7 +20,7 @@ const Login = () => {
 
     const handleForm = async (e) => {
         e.preventDefault();
-        const loginResponse = await axios.post(`${getApiBaseUrl()}/api/auth/login`, formData);
+        const loginResponse = await http.post(`${getApiBaseUrl()}/api/auth/login`, formData);
         console.log(formData);
         console.log(loginResponse);
     }
