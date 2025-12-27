@@ -8,6 +8,10 @@ const isBackend = (value: unknown): value is Backend => {
     return value === 'laravel' || value === 'django'
 }
 
+export const setActiveBackend = (backend: Backend) => {
+    localStorage.setItem(STORAGE_KEY, backend);
+}
+
 export const getActiveBackend = (): Backend => {
 
     const stored = localStorage.getItem(STORAGE_KEY);
