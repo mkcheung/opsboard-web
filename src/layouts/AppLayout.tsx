@@ -1,6 +1,17 @@
-import { Link, Outlet } from "react-router-dom";
-
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 export default function AppLayout() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const handler = () => {
+            navigate('/login', { replace: true })
+        }
+
+        window.addEventListener('opsboard:unauthorized', handler)
+        return () => window.removeEventListener('opsboard:unauthorized', handler)
+    }, [navigate])
+
     return (
         <div style={{ padding: 16 }}>
             <header style={{ display: "flex", gap: 12, alignItems: "center" }}>
