@@ -69,7 +69,7 @@ describe('test unauthorized interceptor', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
-    it('something', async () => {
+    it('test 401 unauthorized', async () => {
         const dispatchSpy = vi.spyOn(window, "dispatchEvent");
         let capturedErrorHandler: (err: any) => any = () => undefined;
 
