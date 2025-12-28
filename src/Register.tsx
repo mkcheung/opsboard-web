@@ -35,7 +35,6 @@ export const Register = () => {
             console.error(`Passwords must match.`);
             setFailure('Passwords must match.');
         }
-
     }
 
     const handleChange = (e) => {

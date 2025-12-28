@@ -17,7 +17,6 @@ import {
     attachAuthInterceptor,
     attachUnauthorizedInterceptor
 } from "./interceptors";
-// import { clearToken } from "../auth/token";
 
 beforeEach(() => {
     mocks.getToken.mockReset();
