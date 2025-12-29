@@ -7,14 +7,19 @@ import {
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const handleLogout = (e) => {
-        const response = http.post(`${getApiBaseUrl()}/api/auth/logout`)
-        clearToken();
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            await http.post(`${getApiBaseUrl()}/api/auth/logout`)
+        } catch (err) {
+            console.error('Logout failed: ', err);
+        } finally {
+            clearToken();
+            navigate('/login');
+        }
     }
     return <div>
         Dashboard
-        <button onClick={() => handleLogout}>
+        <button onClick={() => handleLogout()}>
             Logout
         </button>
     </div>
