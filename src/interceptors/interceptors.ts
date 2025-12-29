@@ -2,7 +2,7 @@ import type { AxiosInstance } from "axios";
 import {
     clearToken,
     getToken
-} from "../auth/token";
+} from "../shared/auth/token";
 
 export const attachAuthInterceptor = (http: AxiosInstance) => {
     http.interceptors.request.use((config) => {

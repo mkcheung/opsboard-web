@@ -3,9 +3,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
-import { http } from "./api/http";
+import { http } from "../../shared/api/http";
 import Login from "./Login";
-import { getApiBaseUrl } from "./config/backend";
 
 const navigateMock = vi.fn();
 vi.mock("react-router-dom", async () => {
@@ -14,13 +13,13 @@ vi.mock("react-router-dom", async () => {
 });
 
 const setTokenMock = vi.fn();
-vi.mock('./auth/token', async () => {
+vi.mock('../../shared/auth/token', async () => {
     return {
         setToken: (...args: any[]) => setTokenMock(...args)
     }
 });
 
-vi.mock('./api/http', () => {
+vi.mock('../../shared/api/http', () => {
     return {
         http: {
             post: vi.fn(),
@@ -29,7 +28,7 @@ vi.mock('./api/http', () => {
 })
 
 const mockApiBase = 'temp';
-vi.mock('./config/backend', () => {
+vi.mock('../../shared/config/backend', () => {
     return {
         getActiveBackend: () => mockApiBase,
         getApiBaseUrl: () => mockApiBase

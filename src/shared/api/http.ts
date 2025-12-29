@@ -3,7 +3,7 @@ import { getApiBaseUrl } from '../config/backend';
 import {
     attachAuthInterceptor,
     attachUnauthorizedInterceptor
-} from '../interceptors/interceptors';
+} from '../../interceptors/interceptors';
 
 export const http = axios.create({ baseURL: getApiBaseUrl() })
 attachAuthInterceptor(http);

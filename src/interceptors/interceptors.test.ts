@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 
-vi.mock('../auth/token', () => {
+vi.mock('../shared/auth/token', () => {
     return {
         getToken: mocks.getToken,
         clearToken: mocks.clearToken,

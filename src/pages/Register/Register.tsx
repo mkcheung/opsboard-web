@@ -1,8 +1,8 @@
-import { http } from "./api/http";
+import { http } from "../../shared/api/http";
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { setToken } from "./auth/token";
-import { validateEmail } from "./helper"
+import { setToken } from "../../shared/auth/token";
+import { validateEmail } from "../../shared/utils/helper";
 
 export const Register = () => {
     const navigate = useNavigate();

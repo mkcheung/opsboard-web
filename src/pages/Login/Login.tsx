@@ -1,11 +1,11 @@
-import { http } from "./api/http";
+import { http } from "../../shared/api/http";
 import {
     getActiveBackend,
     getApiBaseUrl
-} from "./config/backend";
+} from "../../shared/config/backend";
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { setToken } from "./auth/token";
+import { setToken } from "../../shared/auth/token";
 
 const Login = () => {
     const navigate = useNavigate();

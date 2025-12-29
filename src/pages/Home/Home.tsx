@@ -2,8 +2,8 @@ import {
     getActiveBackend,
     setActiveBackend,
     getApiBaseUrl,
-} from "./config/backend";
-import { useActiveBackend } from "./config/useActiveBackend";
+} from "../../shared/config/backend";
+import { useActiveBackend } from "../../shared/config/useActiveBackend";
 
 const Home = () => {
     const backend = useActiveBackend();

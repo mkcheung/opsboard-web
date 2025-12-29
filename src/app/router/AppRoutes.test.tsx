@@ -3,7 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import AppRoutes from "./AppRoutes";
 
-vi.mock('./config/env', () => {
+vi.mock('../../shared/config/env', () => {
     return {
         readEnv: () => ({
             activeBackendDefault: 'laravel',

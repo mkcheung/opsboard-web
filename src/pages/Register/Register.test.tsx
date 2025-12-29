@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
-import { http } from "./api/http";
+import { http } from "../../shared/api/http";
 import { Register } from "./Register";
 
 // mock navigate
@@ -14,11 +14,11 @@ vi.mock("react-router-dom", async () => {
 });
 
 const setTokenMock = vi.fn();
-vi.mock('./auth/token', () => ({
+vi.mock('../../shared/auth/token', () => ({
     setToken: (...args: any[]) => setTokenMock(...args)
 }));
 
-vi.mock("./api/http", () => {
+vi.mock("../../shared/api/http", () => {
     return {
         http: {
             post: vi.fn(),
