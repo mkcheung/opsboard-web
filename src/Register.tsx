@@ -29,10 +29,10 @@ export const Register = () => {
                 setFailure('Error in User Registration Submission');
             }
         } else if (!emailValid) {
-            console.error(`Email format is invalid.`);
+            console.error('Email format is invalid.');
             setFailure('Email format is invalid.');
         } else {
-            console.error(`Passwords must match.`);
+            console.error('Passwords must match.');
             setFailure('Passwords must match.');
         }
     }

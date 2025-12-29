@@ -26,6 +26,11 @@ vi.mock("./api/http", () => {
     };
 });
 
+afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+});
+
 test("test successful register and navigate to login", async () => {
     (http.post as any).mockResolvedValue({
         status: 201,
@@ -81,6 +86,58 @@ test("test unsuccessful register and navigate to login", async () => {
     expect(alert).toHaveTextContent('Error in User Registration Submission');
     expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Error in User Registration Submission"
+    );
+    consoleErrorSpy.mockRestore();
+});
+
+test("test invalid emails", async () => {
+    (http.post as any).mockResolvedValue({
+        status: 500,
+        data: {}
+    });
+
+    const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => { });
+
+    render(<Register />);
+
+    await userEvent.type(screen.getByLabelText(/name/i), "Mars");
+    await userEvent.type(screen.getByLabelText(/email/i), "marstest.com");
+    await userEvent.type(screen.getByLabelText(/^password:\s*$/i), 'password1234');
+    await userEvent.type(screen.getByLabelText(/confirm/i), 'password1234');
+    await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Email format is invalid.');
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Email format is invalid."
+    );
+    consoleErrorSpy.mockRestore();
+});
+
+test("test mismatched passwords", async () => {
+    (http.post as any).mockResolvedValue({
+        status: 500,
+        data: {}
+    });
+
+    const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => { });
+
+    render(<Register />);
+
+    await userEvent.type(screen.getByLabelText(/name/i), "Mars");
+    await userEvent.type(screen.getByLabelText(/email/i), "mars@test.com");
+    await userEvent.type(screen.getByLabelText(/^password:\s*$/i), 'improperpw123');
+    await userEvent.type(screen.getByLabelText(/confirm/i), 'password1234');
+    await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Passwords must match.');
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Passwords must match."
     );
     consoleErrorSpy.mockRestore();
 });
