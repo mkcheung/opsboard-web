@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { expect, beforeEach, vi } from 'vitest';
 import { render, screen } from "@testing-library/react";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -6,7 +6,6 @@ const mocks = vi.hoisted(() => ({
     getToken: vi.fn(),
 }));
 vi.mock('../../shared/auth/token', () => {
-    getToken: vi.fn()
     return {
         getToken: mocks.getToken,
     }
