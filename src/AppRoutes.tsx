@@ -4,6 +4,7 @@ import {
     Navigate
 } from "react-router-dom";
 import AppLayout from './layouts/AppLayout';
+import Dashboard from './Dashboard';
 import Home from './Home';
 import Login from './Login';
 import Register from './Register';
@@ -15,6 +16,7 @@ export default function App() {
             <Route path="/" element={<AppLayout />}>
                 <Route index element={<Home />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/settings" element={<Settings />} />
 

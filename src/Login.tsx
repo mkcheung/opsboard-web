@@ -4,8 +4,11 @@ import {
     getApiBaseUrl
 } from "./config/backend";
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { setToken } from "./auth/token";
 
 const Login = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -20,9 +23,18 @@ const Login = () => {
 
     const handleForm = async (e) => {
         e.preventDefault();
-        const loginResponse = await http.post(`${getApiBaseUrl()}/api/auth/login`, formData);
-        console.log(formData);
-        console.log(loginResponse);
+        try {
+            const loginResponse = await http.post(`${getApiBaseUrl()}/api/auth/login`, formData);
+            if (loginResponse.status === 200) {
+                setToken(loginResponse.data.token);
+                navigate('/dashboard')
+            } else {
+                console.error('Login Failed - please try again');
+            }
+        } catch (error) {
+            console.error('Login Failed');
+        }
+
     }
 
     return <div>
