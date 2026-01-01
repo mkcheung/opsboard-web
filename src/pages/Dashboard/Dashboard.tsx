@@ -16,11 +16,10 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const handleLogout = async () => {
         try {
-            await http.post(`${getApiBaseUrl()}/api/auth/logout`)
+            dispatch(authActions.logoutRequested());
         } catch (err) {
             console.error('Logout failed: ', err);
         } finally {
-            clearToken();
             navigate('/login');
         }
     }

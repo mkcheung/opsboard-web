@@ -5,28 +5,32 @@ import {
 } from "../../shared/config/backend";
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { setToken } from "../../shared/auth/token";
+import { authActions } from "../../store/auth/authSlice";
+import { useAppDispatch } from "../../store/hooks/hooks";
+import { useAppSelector } from "../../store/hooks/hooks";
 
 const Login = () => {
+
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     })
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
     }
 
-    const handleForm = async (e) => {
+    const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const loginResponse = await http.post(`${getApiBaseUrl()}/api/auth/login`, formData);
-            if (loginResponse.status === 200) {
-                setToken(loginResponse.data.token);
+            dispatch(authActions.loginRequested(formData))
+            const authStatus = useAppSelector((s) => s.auth.status);
+            if (authStatus === 'authenticated') {
                 navigate('/dashboard')
             } else {
                 console.error('Login Failed - please try again');

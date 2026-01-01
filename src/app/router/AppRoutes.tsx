@@ -17,21 +17,14 @@ export default function AppRoutes() {
             <Route path="/" element={<AppLayout />}>
                 <Route index element={<Home />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/dashboard"
-                    element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                </Route>
                 <Route path="/register" element={<Register />} />
-                <Route path="/settings"
-                    element={
-                        <ProtectedRoute>
-                            <Settings />
-                        </ProtectedRoute>
-                    }
-                />
+
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/settings" element={<Settings />} />
+                </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
         </Routes>

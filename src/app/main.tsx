@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import "../shared/api/initHttp";
 import '../index.css'
 import AppRoutes from './router/AppRoutes.tsx'
+import { AuthBoot } from '../store/auth/AuthBoot.tsx';
 import { Provider } from "react-redux";
 import { store } from "../store/store";
 
@@ -11,7 +12,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <AppRoutes />
+        <AuthBoot>
+          <AppRoutes />
+        </AuthBoot>
       </BrowserRouter>
     </Provider>
   </StrictMode>

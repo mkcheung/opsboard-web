@@ -1,24 +1,25 @@
 import {
-    getToken,
-} from "../../shared/auth/token"
-import {
-    useLocation,
     Navigate,
+    Outlet,
 } from "react-router-dom";
+import {
+    useAppSelector
+} from "../../store/hooks/hooks";
 
-type Props = {
-    children: React.ReactNode;
-}
+const ProtectedRoute = () => {
 
-const ProtectedRoute = ({
-    children
-}: Props) => {
-    const token = getToken();
-    const location = useLocation();
-    if (!token) {
-        return <Navigate to="/login" replace state={{ from: location }} />;
+    const status = useAppSelector((s) => s.auth.status);
+
+    if (status === 'checking') {
+        return <div>...Loading</div>
     }
-    return <>{children}</>;
+    if (status === 'unauthenticated') {
+        return <Navigate to="/login" replace />;
+    }
+
+    return <>
+        <Outlet />
+    </>;
 }
 
 export default ProtectedRoute;

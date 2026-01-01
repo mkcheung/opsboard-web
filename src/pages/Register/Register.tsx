@@ -15,7 +15,7 @@ export const Register = () => {
     const [failure, setFailure] = useState('')
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const emailValid = validateEmail(formData.email);
         if (formData.password !== "" && (formData.password === formData.password_confirm) && emailValid) {
@@ -37,7 +37,7 @@ export const Register = () => {
         }
     }
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         try {
             setFormData({
                 ...formData,
