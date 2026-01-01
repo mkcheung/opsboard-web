@@ -13,12 +13,21 @@ vi.mock('../../shared/config/env', () => {
     };
 });
 
+
+const dispatchMock = vi.fn();
+const appSelectorMock = vi.fn();
+
+vi.mock('../../store/hooks/hooks', () => ({
+    useAppDispatch: () => dispatchMock,
+    useAppSelector: () => appSelectorMock
+}));
+
 test("navigating to /login renders the Login page", () => {
+    appSelectorMock.mockResolvedValue('temp');
     render(
         <MemoryRouter initialEntries={["/login"]}>
             <AppRoutes />
         </MemoryRouter>
     );
-
     expect(screen.getByRole("heading", { name: /Opsboard/i })).toBeInTheDocument();
 });

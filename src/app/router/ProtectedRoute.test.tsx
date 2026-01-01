@@ -1,6 +1,7 @@
 import { expect, beforeEach, vi } from 'vitest';
 import { render, screen } from "@testing-library/react";
 import ProtectedRoute from "./ProtectedRoute";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 
 const mocks = vi.hoisted(() => ({
     getToken: vi.fn(),
@@ -10,6 +11,7 @@ vi.mock('../../shared/auth/token', () => {
         getToken: mocks.getToken,
     }
 });
+
 
 beforeEach(() => {
     mocks.getToken.mockReset();
@@ -27,27 +29,39 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
+let mockStatus = "checking";
+vi.mock('../../store/hooks/hooks', () => ({
+    useAppSelector: (selector: any) => selector({ auth: { status: mockStatus } }),
+}));
+
 test("test successful register and render children", async () => {
-    mocks.getToken.mockReturnValue("temp");
-    locationMock.mockReturnValue('temporary');
-    render(<ProtectedRoute>
-        <div>Secret</div>
-    </ProtectedRoute>);
-    expect(screen.getByText("Secret")).toBeInTheDocument();
-    expect(screen.queryByTestId("navigate")).toBeNull();
+    mockStatus = 'checking';
+    render(
+        <MemoryRouter initialEntries={["/dashboard"]}>
+            <Routes>
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<div>Secret</div>} />
+                </Route>
+                <Route path="/login" element={<div>Login</div>} />
+            </Routes>
+        </MemoryRouter>);
+    expect(screen.getByText("...Loading")).toBeInTheDocument();
+    expect(screen.queryByText("Secret")).toBeNull();
 });
 
 test("test poor register and navigate to login", async () => {
-    mocks.getToken.mockReturnValue(null);
-    locationMock.mockReturnValue('dashboard');
-    render(<ProtectedRoute>
-        <div>Secret</div>
-    </ProtectedRoute>);
-    expect(screen.queryByText("Secret")).toBeNull();
+    mockStatus = 'unauthenticated';
+    render(<MemoryRouter initialEntries={["/dashboard"]}>
+        <Routes>
+            <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<div>...Loading</div>} />
+            </Route>
+            <Route path="/login" element={<div>Login</div>} />
+        </Routes>
+    </MemoryRouter>)
     const nav = screen.getByTestId("navigate");
     const props = JSON.parse(nav.getAttribute("data-props")!);
 
     expect(props.to).toBe("/login");
     expect(props.replace).toBe(true);
-    expect(props.state).toEqual({ from: 'dashboard' });
 });

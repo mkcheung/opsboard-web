@@ -6,8 +6,10 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { authActions } from "../../store/auth/authSlice";
-import { useAppDispatch } from "../../store/hooks/hooks";
-import { useAppSelector } from "../../store/hooks/hooks";
+import {
+    useAppDispatch,
+    useAppSelector
+} from "../../store/hooks/hooks";
 
 const Login = () => {
 
@@ -35,12 +37,7 @@ const Login = () => {
 
     const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try {
-            dispatch(authActions.loginRequested(formData))
-        } catch (error) {
-            console.error('Login Failed');
-        }
-
+        dispatch(authActions.loginRequested(formData))
     }
 
     return <div>

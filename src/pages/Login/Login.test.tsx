@@ -1,22 +1,15 @@
 import { expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
-import { http } from "../../shared/api/http";
+import { authActions } from "../../store/auth/authSlice";
 import Login from "./Login";
 
 const navigateMock = vi.fn();
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual<any>('react-router-dom');
     return { ...actual, useNavigate: () => navigateMock }
-});
-
-const setTokenMock = vi.fn();
-vi.mock('../../shared/auth/token', async () => {
-    return {
-        setToken: (...args: any[]) => setTokenMock(...args)
-    }
 });
 
 vi.mock('../../shared/api/http', () => {
@@ -35,91 +28,48 @@ vi.mock('../../shared/config/backend', () => {
     }
 });
 
+const dispatchMock = vi.fn();
+const appSelectorMock = vi.fn();
+let mockStatus = "unauthenticated";
+vi.mock('../../store/hooks/hooks', () => ({
+    useAppDispatch: () => dispatchMock,
+    useAppSelector: (selector: any) => selector({ auth: { status: mockStatus } }),
+}));
 afterEach(() => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
+    mockStatus = "unauthenticated";
 });
 
 test("test successful login", async () => {
-    (http.post as any).mockResolvedValue({
-        status: 200,
-        data: {
-            token: 'testtoken'
-        }
-    });
-    render(<Login />);
+    appSelectorMock.mockReturnValueOnce("unauthenticated");
+    const { rerender } = render(<Login />);
 
     await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
     await userEvent.type(screen.getByLabelText(/password/i), 'testpassword');
     await userEvent.click(screen.getByRole("button", { name: /login/i }));
-    expect(http.post).toHaveBeenCalledWith(
-        `${mockApiBase}/api/auth/login`,
-        expect.objectContaining({
-            email: 'test@test.com',
-            password: 'testpassword'
-        })
+    expect(dispatchMock).toHaveBeenCalledWith(
+        authActions.loginRequested({ email: "test@test.com", password: "testpassword" })
     );
-    expect(setTokenMock).toHaveBeenCalledWith('testtoken');
-    expect(navigateMock).toHaveBeenCalledWith('/dashboard');
+    mockStatus = "authenticated";
+    rerender(<Login />);
+    await waitFor(() => {
+        expect(navigateMock).toHaveBeenCalledWith("/dashboard", { replace: true });
+    });
 });
 
 test("test unsuccessful login", async () => {
-    (http.post as any).mockResolvedValue({
-        status: 500,
-        data: {
-            token: 'testtoken'
-        }
+    appSelectorMock.mockReturnValueOnce("unauthenticated");
+    const { rerender } = render(<Login />);
+
+    await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
+    await userEvent.type(screen.getByLabelText(/password/i), 'testpassword');
+    await userEvent.click(screen.getByRole("button", { name: /login/i }));
+    expect(dispatchMock).toHaveBeenCalledWith(
+        authActions.loginRequested({ email: "test@test.com", password: "testpassword" })
+    );
+    rerender(<Login />);
+    await waitFor(() => {
+        expect(navigateMock).not.toHaveBeenCalledWith("/dashboard", { replace: true });
     });
-
-    const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => { });
-
-
-    render(<Login />);
-
-    await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'testpassword');
-    await userEvent.click(screen.getByRole("button", { name: /login/i }));
-    expect(http.post).toHaveBeenCalledWith(
-        `${mockApiBase}/api/auth/login`,
-        expect.objectContaining({
-            email: 'test@test.com',
-            password: 'testpassword'
-        })
-    );
-    expect(setTokenMock).not.toHaveBeenCalled()
-    expect(navigateMock).not.toHaveBeenCalled()
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Login Failed - please try again"
-    );
-    consoleErrorSpy.mockRestore();
-});
-
-test("test failed login call", async () => {
-    (http.post as any).mockRejectedValueOnce(new Error('malfunction'));
-
-    const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => { });
-
-
-    render(<Login />);
-
-    await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'testpassword');
-    await userEvent.click(screen.getByRole("button", { name: /login/i }));
-    expect(http.post).toHaveBeenCalledWith(
-        `${mockApiBase}/api/auth/login`,
-        expect.objectContaining({
-            email: 'test@test.com',
-            password: 'testpassword'
-        })
-    );
-    expect(setTokenMock).not.toHaveBeenCalled()
-    expect(navigateMock).not.toHaveBeenCalled()
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Login Failed"
-    );
-    consoleErrorSpy.mockRestore();
 });
