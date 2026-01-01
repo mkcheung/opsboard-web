@@ -9,7 +9,6 @@ import type { RootState } from "../store";
 export function AuthBoot({ children }: { children: React.ReactNode }) {
     const dispatch = useAppDispatch();
     const status = useAppSelector((s: RootState) => s.auth.status);
-
     useEffect(() => {
         dispatch(authActions.bootRequested());
     }, [dispatch]);

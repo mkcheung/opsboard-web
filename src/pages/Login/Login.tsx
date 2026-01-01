@@ -3,7 +3,7 @@ import {
     getActiveBackend,
     getApiBaseUrl
 } from "../../shared/config/backend";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { authActions } from "../../store/auth/authSlice";
 import { useAppDispatch } from "../../store/hooks/hooks";
@@ -12,11 +12,19 @@ import { useAppSelector } from "../../store/hooks/hooks";
 const Login = () => {
 
     const dispatch = useAppDispatch();
+    const status = useAppSelector((s) => s.auth.status);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     })
+
+    useEffect(() => {
+        if (status === "authenticated") {
+            navigate("/dashboard", { replace: true });
+        }
+    }, [status, navigate]);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -29,12 +37,6 @@ const Login = () => {
         e.preventDefault();
         try {
             dispatch(authActions.loginRequested(formData))
-            const authStatus = useAppSelector((s) => s.auth.status);
-            if (authStatus === 'authenticated') {
-                navigate('/dashboard')
-            } else {
-                console.error('Login Failed - please try again');
-            }
         } catch (error) {
             console.error('Login Failed');
         }

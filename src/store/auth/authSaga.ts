@@ -7,7 +7,7 @@ import { getApiBaseUrl } from '../../shared/config/backend'
 import { END } from "redux-saga";
 
 const ENDPOINTS = {
-    me: `${getApiBaseUrl()}/api/auth/me`,
+    me: `${getApiBaseUrl()}/api/me`,
     login: `${getApiBaseUrl()}/api/auth/login`,
     logout: `${getApiBaseUrl()}/api/auth/logout`,
 };
@@ -30,7 +30,6 @@ function* bootWorker() {
 }
 
 function* loginWorker(action: ReturnType<typeof authActions.loginRequested>) {
-
     try {
         const { token, user }: { token: string, user: User } = yield call(() =>
             http.post(ENDPOINTS.login, action.payload).then(r => r.data));
@@ -48,6 +47,7 @@ function* loginWorker(action: ReturnType<typeof authActions.loginRequested>) {
 function* logoutWorker() {
     yield call(() => clearToken());
     yield call(() => setAuthToken(null));
+    yield put(authActions.logoutSucceeded());
 }
 
 export function* authSaga() {
