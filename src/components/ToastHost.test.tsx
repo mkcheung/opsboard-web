@@ -46,13 +46,13 @@ describe('ToastHost tests', () => {
     });
 
     it("test appearance of toast and user close", async () => {
-        vi.useFakeTimers();
         render(<ToastHost />);
         expect(screen.getByText("Test Message")).toBeInTheDocument();
         await userEvent.click(screen.getByRole("button"));
         expect(dispatchMock).toHaveBeenCalledWith(
             uiActions.toastRemoved({ id: selectorFunct.ui.toasts[0].id })
         );
+
     });
 
     it("test no toast appearance", async () => {

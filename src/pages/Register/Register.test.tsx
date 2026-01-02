@@ -5,6 +5,8 @@ import "@testing-library/jest-dom";
 
 import { http } from "../../shared/api/http";
 import { Register } from "./Register";
+import { uiActions } from "../../features/ui/uiSlice";
+import { loginMessages } from "../../features/ui/toastMessages";
 
 // mock navigate
 const navigateMock = vi.fn();
@@ -26,10 +28,18 @@ vi.mock("../../shared/api/http", () => {
     };
 });
 
+const dispatchMock = vi.fn();
+
+vi.mock('../../store/hooks/hooks', () => ({
+    useAppDispatch: () => dispatchMock,
+    // useAppSelector: (selector: any) => selector(selectorFunct),
+}));
+
 afterEach(() => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
 });
+
 
 test("test successful register and navigate to login", async () => {
     (http.post as any).mockResolvedValue({
@@ -54,6 +64,12 @@ test("test successful register and navigate to login", async () => {
     );
     expect(setTokenMock).toHaveBeenCalledWith('sample');
     expect(navigateMock).toHaveBeenCalledWith('/login');
+    expect(dispatchMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+            type: 'ui/toastAdded',
+            payload: expect.objectContaining({ kind: 'success', message: loginMessages.registered })
+        })
+    );
 });
 
 test("test unsuccessful register and navigate to login", async () => {
@@ -82,8 +98,6 @@ test("test unsuccessful register and navigate to login", async () => {
             password_confirm: "password123",
         })
     );
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('Error in User Registration Submission');
     expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Error in User Registration Submission"
     );
@@ -108,8 +122,12 @@ test("test invalid emails", async () => {
     await userEvent.type(screen.getByLabelText(/confirm/i), 'password1234');
     await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('Email format is invalid.');
+    expect(dispatchMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+            type: 'ui/toastAdded',
+            payload: expect.objectContaining({ kind: 'error', message: 'Email format is invalid.' })
+        })
+    );
     expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Email format is invalid."
     );
@@ -134,8 +152,12 @@ test("test mismatched passwords", async () => {
     await userEvent.type(screen.getByLabelText(/confirm/i), 'password1234');
     await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('Passwords must match.');
+    expect(dispatchMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+            type: 'ui/toastAdded',
+            payload: expect.objectContaining({ kind: 'error', message: 'Passwords must match.' })
+        })
+    );
     expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Passwords must match."
     );
