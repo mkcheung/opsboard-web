@@ -10,6 +10,7 @@ import Login from '../../pages/Login/Login';
 import ProtectedRoute from "./ProtectedRoute";
 import Register from '../../pages/Register/Register';
 import Settings from "../../pages/Settings/Settings";
+import Projects from "../../pages/Projects/Projects";
 
 export default function AppRoutes() {
     return (
@@ -21,7 +22,9 @@ export default function AppRoutes() {
                     <Route path="dashboard" element={<Dashboard />} />
                 </Route>
                 <Route path="register" element={<Register />} />
-
+                <Route element={<ProtectedRoute />}>
+                    <Route path="projects" element={<Projects />} />
+                </Route>
                 <Route element={<ProtectedRoute />}>
                     <Route path="settings" element={<Settings />} />
                 </Route>
