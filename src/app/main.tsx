@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import "../shared/api/initHttp";
 import '../index.css'
 import AppRoutes from './router/AppRoutes.tsx'
+import { ToastHost } from '../components/ToastHost.tsx';
 import { AuthBoot } from '../store/auth/AuthBoot.tsx';
 import { Provider } from "react-redux";
 import { store } from "../store/store";
@@ -11,6 +12,7 @@ import { store } from "../store/store";
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
+      <ToastHost />
       <BrowserRouter>
         <AuthBoot>
           <AppRoutes />

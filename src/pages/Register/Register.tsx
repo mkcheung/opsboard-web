@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { setToken } from "../../shared/auth/token";
 import { validateEmail } from "../../shared/utils/helper";
+import { useAppDispatch } from "../../store/hooks/hooks";
+import { uiActions } from "../../features/ui/uiSlice";
+import { loginMessages } from "../../features/ui/toastMessages";
 
 export const Register = () => {
     const navigate = useNavigate();
@@ -12,8 +15,7 @@ export const Register = () => {
         password: '',
         password_confirm: ''
     });
-    const [failure, setFailure] = useState('')
-
+    const dispatch = useAppDispatch()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -21,19 +23,19 @@ export const Register = () => {
         if (formData.password !== "" && (formData.password === formData.password_confirm) && emailValid) {
             const registerResponse = await http.post('/api/auth/register', formData);
             if (registerResponse.status === 201) {
-                setFailure('');
                 setToken(registerResponse.data.token)
                 navigate('/login')
+                dispatch(uiActions.toastAdded({ kind: 'success', message: loginMessages.registered }))
             } else {
                 console.error(`Error in User Registration Submission`);
-                setFailure('Error in User Registration Submission');
+                dispatch(uiActions.toastAdded({ kind: 'error', message: 'Error in User Registration Submission' }))
             }
         } else if (!emailValid) {
             console.error('Email format is invalid.');
-            setFailure('Email format is invalid.');
+            dispatch(uiActions.toastAdded({ kind: 'error', message: 'Email format is invalid.' }))
         } else {
             console.error('Passwords must match.');
-            setFailure('Passwords must match.');
+            dispatch(uiActions.toastAdded({ kind: 'error', message: 'Passwords must match.' }))
         }
     }
 
@@ -45,12 +47,11 @@ export const Register = () => {
             })
         } catch (err) {
             console.error(`Error in User Registration: ${err}`);
-            setFailure('Error in User Registration Submission');
+            dispatch(uiActions.toastAdded({ kind: 'error', message: `Error in User Registration: ${err}` }))
         }
     }
 
     return <div>
-        {failure && <div role="alert">{failure}</div>}
         <form onSubmit={handleSubmit}>
             <label htmlFor="name">Name: </label>
             <input id="name" name="name" type="text" value={formData.name} onChange={handleChange}>

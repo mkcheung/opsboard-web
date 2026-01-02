@@ -5,6 +5,8 @@ import { getToken, setToken, clearToken } from "../../shared/auth/token";
 import { http, setAuthToken } from "../../shared/api/http";
 import { getApiBaseUrl } from '../../shared/config/backend'
 import { END } from "redux-saga";
+import { uiActions } from "../../features/ui/uiSlice";
+import { loginMessages } from "../../features/ui/toastMessages";
 
 const ENDPOINTS = {
     me: `${getApiBaseUrl()}/api/me`,
@@ -36,6 +38,7 @@ function* loginWorker(action: ReturnType<typeof authActions.loginRequested>) {
         yield call(() => setToken(token));
         yield call(() => setAuthToken(token));
         yield put(authActions.loginSucceeded({ user, token }))
+        yield put(uiActions.toastAdded({ kind: 'success', message: loginMessages.loggedIn }))
     } catch (err) {
         yield call(() => clearToken())
         yield call(() => setAuthToken(null));
@@ -48,6 +51,7 @@ function* logoutWorker() {
     yield call(() => clearToken());
     yield call(() => setAuthToken(null));
     yield put(authActions.logoutSucceeded());
+    yield put(uiActions.toastAdded({ kind: 'success', message: loginMessages.loggedOut }))
 }
 
 export function* authSaga() {
