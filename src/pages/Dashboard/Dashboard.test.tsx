@@ -1,11 +1,9 @@
-import { expect, beforeEach, vi } from 'vitest';
+import { expect, vi } from 'vitest';
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Dashboard from './Dashboard';
-import { http } from "../../shared/api/http";
 import {
     getToken,
-    setToken
 } from '../../shared/auth/token';
 
 const mocks = vi.hoisted(() => ({

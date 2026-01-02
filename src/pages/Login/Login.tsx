@@ -1,4 +1,3 @@
-import { http } from "../../shared/api/http";
 import {
     getActiveBackend,
     getApiBaseUrl
