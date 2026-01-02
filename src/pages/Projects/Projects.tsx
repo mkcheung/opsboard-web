@@ -15,15 +15,7 @@ interface ProjectType {
 const Projects = () => {
 
     const [createOpen, setCreateOpen] = useState(false);
-    const [projects, setProjects] = useState<ProjectType[]>([]);
-    useEffect(() => {
-        loadProjects();
-    }, []);
 
-    const loadProjects = async () => {
-        let projectData = await http.get(`${getApiBaseUrl}/api/projects`).then(res => res.data);
-        setProjects(projectData);
-    }
     return (
         <div style={{ padding: 24 }}>
             <header style={{ display: "flex", alignItems: "center", gap: 12 }}>

@@ -11,8 +11,6 @@ import {
 import {
     authActions
 } from "../../store/auth/authSlice";
-import { http } from "../../shared/api/http";
-import { getApiBaseUrl } from "../../shared/config/backend";
 
 interface ProjectType {
     id: string
@@ -24,15 +22,6 @@ const Dashboard = () => {
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const [projects, setProjects] = useState<ProjectType[]>([]);
-    useEffect(() => {
-        loadProjects();
-    }, []);
-
-    const loadProjects = async () => {
-        let projectData = await http.get(`${getApiBaseUrl}/api/projects`).then(res => res.data);
-        setProjects(projectData);
-    }
 
     const handleLogout = async () => {
         dispatch(authActions.logoutRequested());
@@ -52,7 +41,7 @@ const Dashboard = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {projects.map((project) => (
+                    {/* {projects.map((project) => (
                         <tr key={project.id}>
                             <td>
                                 {project.name}
@@ -61,7 +50,7 @@ const Dashboard = () => {
                                 {project.description}
                             </td>
                         </tr>
-                    ))}
+                    ))} */}
                 </tbody>
             </table>
         </div>

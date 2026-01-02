@@ -26,7 +26,6 @@ const Login = () => {
         }
     }, [status, navigate]);
 
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,

@@ -7,6 +7,7 @@ import { getApiBaseUrl } from '../../shared/config/backend'
 import { END } from "redux-saga";
 import { uiActions } from "../../features/ui/uiSlice";
 import { loginMessages } from "../../features/ui/toastMessages";
+import { projectActions } from "../project/projectSlice";
 
 const ENDPOINTS = {
     me: `${getApiBaseUrl()}/api/me`,
@@ -39,6 +40,7 @@ function* loginWorker(action: ReturnType<typeof authActions.loginRequested>) {
         yield call(() => setAuthToken(token));
         yield put(authActions.loginSucceeded({ user, token }))
         yield put(uiActions.toastAdded({ kind: 'success', message: loginMessages.loggedIn }))
+        yield put(projectActions.requestProjectLoad({ user }));
     } catch (err) {
         yield call(() => clearToken())
         yield call(() => setAuthToken(null));

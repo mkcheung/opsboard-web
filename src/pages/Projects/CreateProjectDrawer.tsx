@@ -1,3 +1,6 @@
+import {
+    useState
+} from "react";
 import { Drawer } from "../../components/Drawer";
 
 type Props = {
@@ -5,19 +8,38 @@ type Props = {
     onClose: () => void;
 };
 
+type projectInputProps = {
+    name: string;
+    description: string;
+}
+
 export function CreateProjectDrawer({ open, onClose }: Props) {
+
+    const [project, setProject] = useState<projectInputProps>({
+        name: '',
+        description: ''
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setProject((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
+    };
+
     return (
         <Drawer open={open} onClose={onClose} title="New project">
-            {/* Replace everything inside here with your form later */}
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <p style={{ margin: 0, color: "#444" }}>
                     Put your create-project form here.
                 </p>
 
-                {/* Example placeholder fields (pure UI; no state/validation) */}
                 <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     <span style={{ fontSize: 13 }}>Project name</span>
                     <input
+                        name="name"
+                        onChange={() => handleChange}
+                        value={project.name}
                         placeholder="e.g. OpsBoard v1"
                         style={{
                             padding: "10px 12px",
@@ -32,6 +54,9 @@ export function CreateProjectDrawer({ open, onClose }: Props) {
                     <span style={{ fontSize: 13 }}>Description (optional)</span>
                     <textarea
                         rows={5}
+                        name='description'
+                        value={project.description}
+                        onChange={() => handleChange}
                         placeholder="What is this project about?"
                         style={{
                             padding: "10px 12px",

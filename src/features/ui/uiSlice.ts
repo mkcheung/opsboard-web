@@ -25,11 +25,11 @@ type ToastPayload = {
     message: string;
     createdAt?: number;
     duration?: number;
-}
+};
 
 const initialState: UiState = {
     toasts: []
-}
+};
 
 const uiSlice = createSlice({
     name: 'ui',
