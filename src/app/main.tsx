@@ -12,8 +12,8 @@ import { store } from "../store/store";
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <ToastHost />
       <BrowserRouter>
+        <ToastHost />
         <AuthBoot>
           <AppRoutes />
         </AuthBoot>

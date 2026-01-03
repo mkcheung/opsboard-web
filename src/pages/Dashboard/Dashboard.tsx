@@ -19,45 +19,21 @@ interface ProjectType {
 }
 
 const Dashboard = () => {
-
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-
-    const handleLogout = async () => {
-        dispatch(authActions.logoutRequested());
-        navigate('/login');
-    }
-    return <div>
-        <h1>
-            Dashboard
-        </h1>
+    return (
         <div>
-            <table>
-                <caption>My Projects</caption>
-                <thead>
-                    <tr>
-                        <th>Project Name</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {/* {projects.map((project) => (
-                        <tr key={project.id}>
-                            <td>
-                                {project.name}
-                            </td>
-                            <td>
-                                {project.description}
-                            </td>
-                        </tr>
-                    ))} */}
-                </tbody>
-            </table>
-        </div>
-        <button onClick={() => handleLogout()}>
-            Logout
-        </button>
-    </div>
-}
+            <div className="pageHeader">
+                <h1 className="h1">Dashboard</h1>
+            </div>
 
-export default Dashboard
+            <div className="card">
+                <div className="cardBody">
+                    <div className="mutedText">
+                        Overview goes here (recent projects, activity, etc.)
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Dashboard;

@@ -1,5 +1,5 @@
 import { http } from "../../shared/api/http";
-import { useState } from 'react';
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "../../shared/auth/token";
 import { validateEmail } from "../../shared/utils/helper";
@@ -9,65 +9,85 @@ import { loginMessages } from "../../features/ui/toastMessages";
 
 export const Register = () => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        password_confirm: ''
+        name: "",
+        email: "",
+        password: "",
+        password_confirm: "",
     });
-    const dispatch = useAppDispatch()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         const emailValid = validateEmail(formData.email);
-        if (formData.password !== "" && (formData.password === formData.password_confirm) && emailValid) {
-            const registerResponse = await http.post('/api/auth/register', formData);
-            if (registerResponse.status === 201) {
-                setToken(registerResponse.data.token)
-                navigate('/login')
-                dispatch(uiActions.toastAdded({ kind: 'success', message: loginMessages.registered }))
-            } else {
-                console.error(`Error in User Registration Submission`);
-                dispatch(uiActions.toastAdded({ kind: 'error', message: 'Error in User Registration Submission' }))
-            }
-        } else if (!emailValid) {
-            console.error('Email format is invalid.');
-            dispatch(uiActions.toastAdded({ kind: 'error', message: 'Email format is invalid.' }))
-        } else {
-            console.error('Passwords must match.');
-            dispatch(uiActions.toastAdded({ kind: 'error', message: 'Passwords must match.' }))
+        const pwMatch = formData.password !== "" && formData.password === formData.password_confirm;
+
+        if (!emailValid) {
+            dispatch(uiActions.toastAdded({ kind: "error", message: "Email format is invalid." }));
+            return;
         }
-    }
+        if (!pwMatch) {
+            dispatch(uiActions.toastAdded({ kind: "error", message: "Passwords must match." }));
+            return;
+        }
+
+        try {
+            const res = await http.post("/api/auth/register", formData);
+            if (res.status === 201) {
+                setToken(res.data.token);
+                dispatch(uiActions.toastAdded({ kind: "success", message: loginMessages.registered }));
+                navigate("/login");
+            } else {
+                dispatch(uiActions.toastAdded({ kind: "error", message: "Registration failed." }));
+            }
+        } catch {
+            dispatch(uiActions.toastAdded({ kind: "error", message: "Registration failed." }));
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        try {
-            setFormData({
-                ...formData,
-                [e.target.name]: e.target.value
-            })
-        } catch (err) {
-            console.error(`Error in User Registration: ${err}`);
-            dispatch(uiActions.toastAdded({ kind: 'error', message: `Error in User Registration: ${err}` }))
-        }
-    }
+        setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
+    };
 
-    return <div>
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="name">Name: </label>
-            <input id="name" name="name" type="text" value={formData.name} onChange={handleChange}>
-            </input>
-            <label htmlFor="email">Email: </label>
-            <input id="email" name="email" type="text" value={formData.email} onChange={handleChange}>
-            </input>
-            <label htmlFor="password">Password: </label>
-            <input id="password" name="password" type="password" value={formData.password} onChange={handleChange}>
-            </input>
-            <label htmlFor="password_confirm">Password Confirm:</label>
-            <input id="password_confirm" name="password_confirm" type="password" value={formData.password_confirm} onChange={handleChange}>
-            </input>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-}
+    return (
+        <div>
+            <div className="pageHeader">
+                <h1 className="h1">Create account</h1>
+            </div>
+
+            <div className="card">
+                <div className="cardBody">
+                    <form className="form" onSubmit={handleSubmit}>
+                        <div className="field">
+                            <div className="label">Name</div>
+                            <input className="input" name="name" value={formData.name} onChange={handleChange} />
+                        </div>
+
+                        <div className="field">
+                            <div className="label">Email</div>
+                            <input className="input" name="email" value={formData.email} onChange={handleChange} />
+                        </div>
+
+                        <div className="field">
+                            <div className="label">Password</div>
+                            <input className="input" type="password" name="password" value={formData.password} onChange={handleChange} />
+                        </div>
+
+                        <div className="field">
+                            <div className="label">Confirm password</div>
+                            <input className="input" type="password" name="password_confirm" value={formData.password_confirm} onChange={handleChange} />
+                        </div>
+
+                        <button className="btn btnPrimary" type="submit">
+                            Submit
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default Register;

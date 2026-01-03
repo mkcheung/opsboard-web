@@ -28,15 +28,11 @@ export function Drawer({
     useEffect(() => {
         if (open) {
             setMounted(true);
-            // next tick so transition runs
             requestAnimationFrame(() => setVisible(true));
             return;
         }
 
-        // start exit animation
         setVisible(false);
-
-        // unmount after transition completes
         const t = window.setTimeout(() => setMounted(false), DURATION_MS);
         return () => window.clearTimeout(t);
     }, [open]);
@@ -53,73 +49,43 @@ export function Drawer({
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [mounted, closeOnEscape, onClose]);
 
+    // Scroll lock (recommended)
+    useEffect(() => {
+        if (!mounted) return;
+
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = prev;
+        };
+    }, [mounted]);
+
     if (!mounted) return null;
 
     return (
         <div
             role="presentation"
             onMouseDown={() => closeOnBackdrop && onClose()}
-            style={{
-                position: "fixed",
-                inset: 0,
-                zIndex: 9999,
-
-                // Backdrop fade
-                background: visible ? "rgba(0,0,0,0.35)" : "rgba(0,0,0,0)",
-                transition: `background ${DURATION_MS}ms ease-out`,
-            }}
+            className={`drawerRoot ${visible ? "drawerRootOpen" : "drawerRootClosed"}`}
+            style={{ ["--drawer-duration" as any]: `${DURATION_MS}ms` }}
         >
             <aside
                 role="dialog"
                 aria-modal="true"
                 aria-label={title ?? "Drawer"}
                 onMouseDown={(e) => e.stopPropagation()}
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    height: "100%",
-                    width: `min(${widthPx}px, 92vw)`,
-                    background: "#fff",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-                    display: "flex",
-                    flexDirection: "column",
-
-                    // Slide in/out
-                    transform: visible ? "translateX(0)" : "translateX(16px)",
-                    opacity: visible ? 1 : 0,
-                    transition: `transform ${DURATION_MS}ms ease-out, opacity ${DURATION_MS}ms ease-out`,
-                }}
+                className={`drawerPanel ${visible ? "drawerPanelOpen" : "drawerPanelClosed"}`}
+                style={{ ["--drawer-width" as any]: `min(${widthPx}px, 92vw)` }}
             >
-                {/* Header */}
-                <div
-                    style={{
-                        padding: 16,
-                        borderBottom: "1px solid #eee",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 12,
-                    }}
-                >
-                    <h2 style={{ margin: 0, fontSize: 18 }}>{title}</h2>
+                <div className="drawerHeader">
+                    <h2 className="drawerTitle">{title}</h2>
                     <div style={{ flex: 1 }} />
-                    <button
-                        onClick={onClose}
-                        aria-label="Close drawer"
-                        style={{
-                            border: "1px solid #ddd",
-                            background: "#fff",
-                            borderRadius: 8,
-                            padding: "6px 10px",
-                            cursor: "pointer",
-                        }}
-                    >
+                    <button onClick={onClose} aria-label="Close drawer" className="btn btnGhost iconBtn">
                         ✕
                     </button>
                 </div>
 
-                {/* Content */}
-                <div style={{ padding: 16, overflow: "auto" }}>{children}</div>
+                <div className="drawerBody">{children}</div>
             </aside>
         </div>
     );
