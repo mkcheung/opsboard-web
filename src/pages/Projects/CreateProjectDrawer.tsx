@@ -1,7 +1,10 @@
 import {
     useState
 } from "react";
+import { uiActions } from "../../features/ui/uiSlice";
 import { Drawer } from "../../components/Drawer";
+import { http } from "../../shared/api/http";
+import { useAppDispatch } from "../../store/hooks/hooks";
 
 type Props = {
     open: boolean;
@@ -14,7 +17,7 @@ type projectInputProps = {
 }
 
 export function CreateProjectDrawer({ open, onClose }: Props) {
-
+    const dispatch = useAppDispatch();
     const [project, setProject] = useState<projectInputProps>({
         name: '',
         description: ''
@@ -25,6 +28,26 @@ export function CreateProjectDrawer({ open, onClose }: Props) {
             ...prev,
             [e.target.name]: e.target.value
         }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
+        try {
+            const registerResponse = await http.post('/api/projects', project);
+            if (registerResponse.status === 200) {
+                dispatch(uiActions.toastAdded({ kind: 'success', message: 'Project Added.' }))
+                setProject({
+                    name: '',
+                    description: ''
+                });
+            } else {
+                console.error(`Error in Project Submission`);
+                dispatch(uiActions.toastAdded({ kind: 'error', message: 'Error in Project Submission' }))
+            }
+        } catch (err) {
+            dispatch(uiActions.toastAdded({ kind: 'error', message: 'Error in Project Submission' }))
+        } finally {
+            onClose();
+        }
     };
 
     return (
@@ -38,7 +61,7 @@ export function CreateProjectDrawer({ open, onClose }: Props) {
                     <span style={{ fontSize: 13 }}>Project name</span>
                     <input
                         name="name"
-                        onChange={() => handleChange}
+                        onChange={(e) => handleChange(e)}
                         value={project.name}
                         placeholder="e.g. OpsBoard v1"
                         style={{
@@ -56,7 +79,7 @@ export function CreateProjectDrawer({ open, onClose }: Props) {
                         rows={5}
                         name='description'
                         value={project.description}
-                        onChange={() => handleChange}
+                        onChange={(e) => handleChange(e)}
                         placeholder="What is this project about?"
                         style={{
                             padding: "10px 12px",
@@ -85,8 +108,7 @@ export function CreateProjectDrawer({ open, onClose }: Props) {
 
                     <button
                         type="button"
-                        // no submit logic yet — you’ll implement later
-                        onClick={() => { }}
+                        onClick={(e) => handleSubmit(e)}
                         style={{
                             border: "1px solid #111",
                             background: "#111",

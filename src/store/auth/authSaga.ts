@@ -26,6 +26,7 @@ function* bootWorker() {
     try {
         const user: User = yield call(() => http.get(ENDPOINTS.me).then(r => r.data));
         yield (put(authActions.bootSucceeded({ user, token })));
+        yield put(projectActions.requestProjectLoad({ user }));
     } catch (err) {
         clearToken();
         yield (put(authActions.bootFailed()));

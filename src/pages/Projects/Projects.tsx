@@ -2,18 +2,12 @@ import {
     useEffect,
     useState
 } from "react";
+import { useAppSelector } from "../../store/hooks/hooks";
 import { CreateProjectDrawer } from "./CreateProjectDrawer";
-import { http } from "../../shared/api/http";
-import { getApiBaseUrl } from "../../shared/config/backend";
-
-interface ProjectType {
-    id: string
-    name: string
-    description: string
-}
 
 const Projects = () => {
 
+    const projects = useAppSelector((s) => s.project.projects);
     const [createOpen, setCreateOpen] = useState(false);
 
     return (
@@ -36,13 +30,28 @@ const Projects = () => {
                 </button>
             </header>
 
-            {/* Your list/table/grid goes here */}
-
+            <table>
+                <caption>My Projects</caption>
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {projects.map((project) => (
+                        <tr key={project.id}>
+                            <td>{project.name}</td>
+                            <td>{project.description}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
             <CreateProjectDrawer
                 open={createOpen}
                 onClose={() => setCreateOpen(false)}
             />
-        </div>
+        </div >
     );
 }
 
