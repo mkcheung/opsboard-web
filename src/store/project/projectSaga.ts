@@ -15,6 +15,17 @@ function* loadProjects(action: ReturnType<typeof projectActions.requestProjectLo
     }
 }
 
+function* deleteProject(action: ReturnType<typeof projectActions.requestDeleteProject>) {
+    try {
+        yield call(() => http.delete(`${getApiBaseUrl()}/api/projects/${action.payload.project.id}`).then(res => res.data));
+        yield put(uiActions.toastAdded({ kind: 'success', message: 'Project Deleted.' }));
+        yield put(projectActions.requestProjectLoad());
+    } catch (err) {
+        yield put(uiActions.toastAdded({ kind: 'error', message: 'Error deleting project' }));
+    }
+}
+
 export function* projectSaga() {
     yield takeLatest(projectActions.requestProjectLoad.type, loadProjects);
+    yield takeLatest(projectActions.requestDeleteProject.type, deleteProject);
 }

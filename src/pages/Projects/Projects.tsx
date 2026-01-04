@@ -3,19 +3,22 @@ import {
     useRef,
     useState
 } from "react";
-import { useAppSelector } from "../../store/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
 import { CreateEditProjectDrawer } from "./CreateEditProjectDrawer";
 import type {
     Project
 } from "./projectTypes";
-
+import { DeleteProjectModal } from "./DeleteProjectModal";
+import { projectActions } from "../../store/project/projectSlice";
 
 const Projects = () => {
+    const dispatch = useAppDispatch();
     const projects = useAppSelector((s) => s.project.projects);
     const [createEditOpen, setCreateEditOpen] = useState(false);
-    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    const [openMenuId, setOpenMenuId] = useState<string | number | null>(null);
     const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
-
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
     const menuRootRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -39,23 +42,24 @@ const Projects = () => {
         };
     }, [openMenuId]);
 
-    const toggleMenu = (projectId: string) => {
+    const toggleMenu = (projectId: string | number) => {
         setOpenMenuId((prev) => (prev === projectId ? null : projectId));
     };
 
-    const handleEdit = (projectId: string) => {
+    const handleEdit = (projectId: string | number) => {
         setOpenMenuId(null);
         const selectedProject = projects.filter((project) => {
             return project.id == projectId;
         });
-        console.log(selectedProject)
         setProjectToEdit(selectedProject[0])
         setCreateEditOpen(true);
     };
 
-    const handleDelete = (projectId: string) => {
+    const handleDelete = (projectId: string | number) => {
         setOpenMenuId(null);
-        console.log("Delete project:", projectId);
+        const selected = projects.find((p) => p.id === projectId) ?? null;
+        setProjectToDelete(selected);
+        setDeleteOpen(true);
     };
 
     return (
@@ -129,6 +133,22 @@ const Projects = () => {
             </div>
 
             <CreateEditProjectDrawer projectToEdit={projectToEdit} open={createEditOpen} onClose={() => setCreateEditOpen(false)} />
+            <DeleteProjectModal
+                open={deleteOpen}
+                project={projectToDelete}
+                onCancel={() => {
+                    setDeleteOpen(false);
+                    setProjectToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (!projectToDelete) return;
+
+                    dispatch(projectActions.requestDeleteProject({ project: projectToDelete }));
+
+                    setDeleteOpen(false);
+                    setProjectToDelete(null);
+                }}
+            />
         </div>
     );
 };
