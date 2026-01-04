@@ -26,7 +26,7 @@ function* bootWorker() {
     try {
         const user: User = yield call(() => http.get(ENDPOINTS.me).then(r => r.data));
         yield (put(authActions.bootSucceeded({ user, token })));
-        yield put(projectActions.requestProjectLoad({ user }));
+        yield put(projectActions.requestProjectLoad());
     } catch (err) {
         clearToken();
         yield (put(authActions.bootFailed()));
@@ -41,7 +41,7 @@ function* loginWorker(action: ReturnType<typeof authActions.loginRequested>) {
         yield call(() => setAuthToken(token));
         yield put(authActions.loginSucceeded({ user, token }))
         yield put(uiActions.toastAdded({ kind: 'success', message: loginMessages.loggedIn }))
-        yield put(projectActions.requestProjectLoad({ user }));
+        yield put(projectActions.requestProjectLoad());
     } catch (err) {
         yield call(() => clearToken())
         yield call(() => setAuthToken(null));

@@ -386,3 +386,83 @@ body {
     0 0 0 4px rgba(91, 108, 255, 0.18),
     0 12px 26px rgba(17, 24, 39, 0.10);
 }
+
+.tableActionsTh,
+.tableActionsTd {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.rowActionsRoot {
+  position: relative;
+  display: inline-block;
+}
+
+.kebabBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: transparent;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 20px;
+}
+
+.kebabBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.actionsMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+
+  /* IMPORTANT: force vertical stacking */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+
+  min-width: 160px;
+  height: auto;
+  /* just in case a global style set a height */
+  padding: 6px;
+
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+}
+
+.actionsMenuItem {
+  /* IMPORTANT: force item to be inside the menu box */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+
+  text-align: left;
+  padding: 10px 10px;
+
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.actionsMenuItem:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.actionsMenuItemDanger {
+  color: #b42318;
+}
+
+.actionsMenuItemDanger:hover {
+  background: rgba(180, 35, 24, 0.08);
+}
