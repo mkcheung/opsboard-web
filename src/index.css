@@ -528,3 +528,151 @@ body {
 .btnDanger:hover {
   filter: brightness(0.95);
 }
+
+.rowLink {
+  font-weight: 800;
+}
+
+.rowLink:hover {
+  text-decoration: underline;
+}
+
+.taskHeaderRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.taskAddBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 1;
+  min-width: min(520px, 100%);
+}
+
+.taskAddBar .input {
+  flex: 1;
+}
+
+.taskRightControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.taskFilters {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Chips feel like "glass pills" */
+.chip {
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.72),
+      rgba(247, 248, 255, 0.55));
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--muted);
+  backdrop-filter: blur(12px);
+}
+
+.chip:hover {
+  background: rgba(17, 24, 39, 0.05);
+  color: var(--text);
+}
+
+.chipActive {
+  background: rgba(91, 108, 255, 0.14);
+  border-color: rgba(91, 108, 255, 0.25);
+  color: var(--text);
+  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.08);
+}
+
+/* Badges read well on glass tables */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  border: 1px solid rgba(17, 24, 39, 0.10);
+  background: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+
+.badgeOpen {
+  background: rgba(91, 108, 255, 0.12);
+  border-color: rgba(91, 108, 255, 0.22);
+}
+
+.badgeDone {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+/* Title button matches your "designed" style */
+.taskTitleBtn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-weight: 900;
+  color: var(--text);
+  text-align: left;
+}
+
+.taskTitleBtn:hover {
+  text-decoration: underline;
+}
+
+.taskTitleDone {
+  opacity: 0.76;
+  text-decoration: line-through;
+}
+
+.taskDesc {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.taskEmpty {
+  padding: 14px 8px;
+}
+
+/* Error surface on glass */
+.taskError {
+  border: 1px solid rgba(229, 72, 77, 0.22);
+  background: rgba(229, 72, 77, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+/* Skeletons */
+.skeleton {
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.08);
+}
+
+/* Drawer header meta row */
+.taskMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.helpText {
+  font-size: 12px;
+  color: var(--muted);
+}

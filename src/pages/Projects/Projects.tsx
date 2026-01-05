@@ -10,6 +10,7 @@ import type {
 } from "./projectTypes";
 import { DeleteProjectModal } from "./DeleteProjectModal";
 import { projectActions } from "../../store/project/projectSlice";
+import { Link, useNavigate } from "react-router-dom";
 
 const Projects = () => {
     const dispatch = useAppDispatch();
@@ -20,6 +21,7 @@ const Projects = () => {
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
     const menuRootRef = useRef<HTMLDivElement | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const onDocMouseDown = (e: MouseEvent) => {
@@ -89,7 +91,11 @@ const Projects = () => {
                         <tbody>
                             {projects.map((p) => (
                                 <tr key={p.id}>
-                                    <td style={{ fontWeight: 700 }}>{p.name}</td>
+                                    <td style={{ fontWeight: 700 }}>
+                                        <Link className="rowLink" to={`/projects/${p.id}`}>
+                                            {p.name}
+                                        </Link>
+                                    </td>
                                     <td className="mutedText">{p.description}</td>
 
                                     <td className="tableActionsTd">
@@ -120,6 +126,17 @@ const Projects = () => {
                                                         onClick={() => handleDelete(p.id)}
                                                     >
                                                         Delete
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="actionsMenuItem"
+                                                        role="menuitem"
+                                                        onClick={() => {
+                                                            setOpenMenuId(null);
+                                                            navigate(`/projects/${p.id}`);
+                                                        }}
+                                                    >
+                                                        Tasks
                                                     </button>
                                                 </div>
                                             )}

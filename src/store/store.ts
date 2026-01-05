@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import authReducer from "./auth/authSlice";
-import uiReducer from "../features/ui/uiSlice";
 import projectReducer from "./project/projectSlice";
+import taskReducer from "./task/taskSlice";
+import uiReducer from "../features/ui/uiSlice";
 import rootSaga from "./rootSaga";
 
 const sagaMiddleware = createSagaMiddleware();
@@ -12,11 +13,12 @@ export const store = configureStore({
         auth: authReducer,
         ui: uiReducer,
         project: projectReducer,
+        task: taskReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
-            thunk: false, // optional but recommended if you commit to Saga
-            serializableCheck: false, // sometimes needed if actions contain Errors, Dates, etc.
+            thunk: false,
+            serializableCheck: false,
         }).concat(sagaMiddleware),
 });
 sagaMiddleware.run(rootSaga);
