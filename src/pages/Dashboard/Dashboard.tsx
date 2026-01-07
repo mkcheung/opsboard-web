@@ -65,7 +65,7 @@ const Dashboard = () => {
         let todayTime = getStartOfDateLocal().getTime();
         let [y, m, d] = due_date.split("-").map(Number);
         let dueDateNum = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
-        let numDays = (dueDateNum - todayTime) / MS_PER_DAY;
+        const numDays = Math.floor((dueDateNum - todayTime) / MS_PER_DAY);
         if (!forTiles) {
             return (dueDateNum < todayTime) ? 'OVERDUE' : (numDays === 0 ? 'TODAY' : (numDays > 1 ? `${numDays} DAYS` : `TOMORROW`));
         } else {
@@ -231,9 +231,9 @@ const Dashboard = () => {
                 }
                 let [y, m, d] = task.due_date.split("-").map(Number);
                 let taskDueDateNum = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
-                overdueCount = todaysDate < taskDueDateNum ? overdueCount + 1 : overdueCount;
+                overdueCount = taskDueDateNum < todaysDate ? overdueCount + 1 : overdueCount;
                 openCount = openStatuses.includes(task.status) ? openCount + 1 : openCount;
-                dueSoonCount = !openStatuses.includes(task.status) && !(todaysDate < taskDueDateNum) ? dueSoonCount + 1 : dueSoonCount;
+                dueSoonCount = !openStatuses.includes(task.status) && !(taskDueDateNum < todaysDate) ? dueSoonCount + 1 : dueSoonCount;
 
             });
             projectAttention.push({
@@ -265,7 +265,7 @@ const Dashboard = () => {
             aheadDate.setDate(base.getDate() + $i);
             let year = aheadDate.getFullYear();
             let month = String(aheadDate.getMonth() + 1).padStart(2, "0");
-            let day = String(aheadDate.getDate() + 1).padStart(2, "0");
+            let day = String(aheadDate.getDate()).padStart(2, "0");
             sevenDaysAhead[$i] = `${year}-${month}-${day}`;
         }
         return sevenDaysAhead;
