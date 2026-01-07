@@ -1,10 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../store/hooks/hooks";
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
 import type {
-    DayOptions,
-    MonthOptions,
     NextAction,
     ProjectAttention,
     SortableTask,
@@ -21,6 +18,8 @@ import type {
     NextTask,
     Project
 } from "../Projects/projectTypes";
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 function badgeToneFromDueLabel(label: string | undefined): "danger" | "warn" | "info" | "neutral" {
     const u = label ? label.toUpperCase() : '';
@@ -140,7 +139,7 @@ const Dashboard = () => {
                         todayCount++;
                         break;
                     case 'NEXTSEVEN':
-                    case 'NEXTHIRTY':
+                    case 'NEXTTHIRTY':
                         duePeriodCount++;
                         break;
                     default:
@@ -162,7 +161,7 @@ const Dashboard = () => {
             const tileItems = getTiles(projectsAndTasks);
             return tileItems;
         },
-        [projectsAndTasks]
+        [projectsAndTasks, timeWindow]
     );
 
     const getNextActions = (psAndTs: Project[]) => {
@@ -313,7 +312,6 @@ const Dashboard = () => {
 
     return (
         <div>
-            {/* Header */}
             <div className="pageHeader">
                 <h1 className="h1">Dashboard</h1>
 
