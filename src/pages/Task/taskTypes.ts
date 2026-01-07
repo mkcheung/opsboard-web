@@ -9,7 +9,7 @@ export type Task = {
     status: TaskStatus;
     description?: string | null;
     due_date?: string | null;
-    priority?: TaskPriority | null;
+    priority: TaskPriority;
     estimate_minutes?: string | number | null;
     updatedAt?: string | null;
 };

@@ -676,3 +676,341 @@ body {
   font-size: 12px;
   color: var(--muted);
 }
+
+/* ================================
+   Dashboard
+   ================================ */
+
+.dashTiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 980px) {
+  .dashTiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .dashTiles {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashTileBtn {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dashTileBtnActive .dashTile {
+  box-shadow: 0 18px 42px rgba(17, 24, 39, 0.16);
+  border-color: rgba(91, 108, 255, 0.28);
+}
+
+.dashTileBody {
+  padding: 14px;
+}
+
+.dashTileLabel {
+  font-size: 13px;
+  font-weight: 850;
+  color: var(--muted);
+}
+
+.dashTileValue {
+  margin-top: 6px;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  color: var(--text);
+}
+
+.dashTileTone-danger {
+  background: linear-gradient(180deg, rgba(229, 72, 77, 0.14), rgba(255, 255, 255, 0.68));
+}
+
+.dashTileTone-warn {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.16), rgba(255, 255, 255, 0.68));
+}
+
+.dashTileTone-info {
+  background: linear-gradient(180deg, rgba(91, 108, 255, 0.14), rgba(255, 255, 255, 0.68));
+}
+
+.dashTileTone-success {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.14), rgba(255, 255, 255, 0.68));
+}
+
+.dashTileTone-neutral {
+  /* uses default .card glass */
+}
+
+.dashGrid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 980px) {
+  .dashGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashCardHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.dashCardTitle {
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+
+.dashCardHint {
+  font-size: 12px;
+}
+
+.dashList {
+  display: grid;
+  gap: 10px;
+}
+
+.dashRow {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 10px;
+  align-items: center;
+
+  border: 1px solid rgba(17, 24, 39, 0.10);
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.dashRowSub {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.dashProjectLink {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.dashRowRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dashChevron {
+  font-size: 20px;
+  line-height: 1;
+  color: rgba(17, 24, 39, 0.35);
+}
+
+/* Checkbox (simple glassy) */
+.dashCheck {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashCheck input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dashCheckBox {
+  width: 18px;
+  height: 18px;
+  border-radius: 7px;
+  border: 1px solid rgba(17, 24, 39, 0.18);
+  background: rgba(255, 255, 255, 0.80);
+  cursor: pointer;
+}
+
+.dashCheck input:checked+.dashCheckBox {
+  border-color: rgba(91, 108, 255, 0.45);
+  background: rgba(91, 108, 255, 0.18);
+  box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.12);
+}
+
+/* Badge tones for due labels */
+.badgeTone-danger {
+  background: rgba(229, 72, 77, 0.10);
+  border-color: rgba(229, 72, 77, 0.24);
+  color: rgba(140, 25, 31, 0.95);
+}
+
+.badgeTone-warn {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.26);
+  color: rgba(124, 74, 0, 0.95);
+}
+
+.badgeTone-info {
+  background: rgba(91, 108, 255, 0.12);
+  border-color: rgba(91, 108, 255, 0.24);
+}
+
+.badgeTone-neutral {
+  /* default .badge already works */
+}
+
+/* Projects panel */
+.dashProject {
+  border: 1px solid rgba(17, 24, 39, 0.10);
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.dashProjectTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dashProjectName {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 900;
+  text-align: left;
+}
+
+.dashProjectControls {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.dashProjectStats {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dashStat {
+  border: 1px solid rgba(17, 24, 39, 0.10);
+  background: rgba(255, 255, 255, 0.60);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.dashStatNum {
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.2px;
+}
+
+.dashStatLabel {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.dashDanger {
+  color: var(--danger);
+}
+
+.dashWarn {
+  color: rgba(124, 74, 0, 0.95);
+}
+
+/* Progress */
+.dashProgress {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+}
+
+.dashProgressTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.dashProgressValue {
+  font-weight: 900;
+}
+
+.dashProgressBar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.08);
+  border: 1px solid rgba(17, 24, 39, 0.10);
+  overflow: hidden;
+}
+
+.dashProgressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(91, 108, 255, 0.9), rgba(91, 108, 255, 0.55));
+}
+
+/* Upcoming */
+.dashUpcoming {
+  display: grid;
+  gap: 10px;
+}
+
+.dashUpcomingRow {
+  border: 1px solid rgba(17, 24, 39, 0.10);
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+}
+
+.dashUpcomingRowActive {
+  border-color: rgba(91, 108, 255, 0.28);
+  box-shadow: 0 16px 36px rgba(17, 24, 39, 0.12);
+}
+
+.dashUpcomingDay {
+  font-weight: 900;
+}
+
+.dashUpcomingHint {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.dashHeaderControls {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 560px) {
+  .pageHeader {
+    align-items: flex-start;
+  }
+}
