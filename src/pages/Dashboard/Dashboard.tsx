@@ -86,6 +86,20 @@ const Dashboard = () => {
         return new Date(y, m - 1, d, 23, 59, 59, 999);
     }
 
+    const translateYYYYMMDDToDate = (YYYYMMDD: string) => {
+        if (!YYYYMMDD) {
+            return "";
+        }
+
+        const date = new Date(YYYYMMDD + "T00:00:00");
+        return new Intl.DateTimeFormat('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }).format(date);
+    }
+
     const sortTasks = (taskA: SortableTask, taskB: SortableTask) => {
         const todayStart = getStartOfDateLocal().getTime();
 
@@ -165,7 +179,6 @@ const Dashboard = () => {
     );
 
     const getNextActions = (psAndTs: Project[]) => {
-        let nextTaskForEachProjectNoDD: NextTask[] = [];
         let nextTaskForEachProject: NextTask[] = [];
 
         psAndTs.forEach(pAndTs => {
@@ -174,33 +187,40 @@ const Dashboard = () => {
             let projectTasks = pAndTs.task;
             if (projectTasks.length > 0) {
                 const sorted = [...projectTasks].sort(sortTasks)
-                if (!sorted[0]?.id || !sorted[0]?.due_date || !sorted[0]?.priority) {
-                    return;
+                if (!activeDay) {
+                    if (!sorted[0]?.id || !sorted[0]?.due_date || !sorted[0]?.priority) {
+                        return;
+                    }
+                    let dueLabel = parseTimesFromCurrentDate(sorted[0].due_date, false);
+                    nextTaskForEachProject.push({
+                        id: Number(sorted[0].id),
+                        title: sorted[0].title,
+                        projectId: projectId,
+                        projectName: projectName,
+                        dueLabel: dueLabel,
+                        priority: sorted[0].priority.charAt(0).toUpperCase() + sorted[0].priority.slice(1)
+                    });
+                } else {
+                    let projectIdOfTaskSelected: number | null = null;
+                    sorted.forEach((sortedTask) => {
+                        if (activeDay !== sortedTask.due_date || sortedTask.project_id === projectIdOfTaskSelected || (!sortedTask.id || !sortedTask.due_date || !sortedTask.priority)) {
+                            return;
+                        }
+                        let dueLabel = parseTimesFromCurrentDate(sortedTask.due_date, false);
+                        nextTaskForEachProject.push({
+                            id: Number(sortedTask.id),
+                            title: sortedTask.title,
+                            projectId: projectId,
+                            projectName: projectName,
+                            dueLabel: dueLabel,
+                            priority: sortedTask.priority.charAt(0).toUpperCase() + sortedTask.priority.slice(1)
+                        });
+                        projectIdOfTaskSelected = projectId;
+                    });
                 }
 
-                nextTaskForEachProjectNoDD.push({
-                    id: Number(sorted[0].id),
-                    title: sorted[0].title,
-                    projectId: projectId,
-                    projectName: projectName,
-                    due_date: sorted[0].due_date,
-                    priority: sorted[0].priority.charAt(0).toUpperCase() + sorted[0].priority.slice(1)
-                })
+
             }
-        });
-        nextTaskForEachProjectNoDD.forEach((task: NextTask) => {
-            if (!task.due_date) {
-                return;
-            }
-            let dueLabel = parseTimesFromCurrentDate(task.due_date, false)
-            nextTaskForEachProject.push({
-                id: task.id,
-                title: task.title,
-                projectId: task.projectId,
-                projectName: task.projectName,
-                dueLabel: dueLabel,
-                priority: task.priority?.charAt(0)?.toUpperCase() + task?.priority?.slice(1)
-            })
         });
         return nextTaskForEachProject;
     }
@@ -210,7 +230,7 @@ const Dashboard = () => {
             const nextTaskForEachProject = getNextActions(projectsAndTasks);
             return nextTaskForEachProject
         },
-        [projectsAndTasks]
+        [projectsAndTasks, activeDay]
     );
 
     const buildProjectAttention = (psAndTs: Project[]) => {
@@ -283,8 +303,8 @@ const Dashboard = () => {
     const buildUpcoming = (psAndTs: Project[]) => {
         let upcomingDays: UpcomingDay[] = [];
         const sevenDaysAhead = getDatesSevenDaysAhead();
-
-        sevenDaysAhead.forEach((dateString) => {
+        const datesToFilterBy = activeDay ? [activeDay] : sevenDaysAhead;
+        datesToFilterBy.forEach((dateString) => {
             let dueCount = 0;
             psAndTs.forEach((pAndT) => {
                 const psTasks = pAndT.task
@@ -307,7 +327,7 @@ const Dashboard = () => {
             const upcomingDays = buildUpcoming(projectsAndTasks);
             return upcomingDays
         },
-        [projectsAndTasks]
+        [projectsAndTasks, activeDay]
     );
 
     return (
@@ -436,7 +456,7 @@ const Dashboard = () => {
                             })}
 
                             {nextActions.length === 0 ? (
-                                <div className="taskEmpty mutedText">No tasks to show.</div>
+                                <div className="taskEmpty mutedText">{activeDay ? `No tasks due on ${translateYYYYMMDDToDate(activeDay)}` : 'No tasks due'}</div>
                             ) : null}
                         </div>
                     </div>
