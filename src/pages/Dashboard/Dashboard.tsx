@@ -75,7 +75,7 @@ const Dashboard = () => {
 
     const getStartOfDateLocal = () => {
         const currentDateTime = new Date();
-        return new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0);
+        return new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 23, 59, 59, 999);
     }
 
     const parseYMDLocal = (ymd: string | null | undefined) => {
@@ -131,16 +131,37 @@ const Dashboard = () => {
         return 0;
     };
 
+    const formatDateToYearMonthDay = (date: Date): string => {
+
+        let year = date.getFullYear();
+        let month = String(date.getMonth() + 1).padStart(2, "0");
+        let day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
+
+    const getDatesDaysAhead = (removeCurrentDay: boolean = false): string[] => {
+        let daysAhead = []
+        const today = getStartOfDateLocal();
+        const numDaysAhead = (timeWindow === "7d" ? 7 : 30);
+        let i = removeCurrentDay ? 1 : 0;
+        for (i; i <= numDaysAhead; i++) {
+            let aheadDate = new Date(today);
+            aheadDate.setDate(today.getDate() + i);
+            daysAhead[i] = formatDateToYearMonthDay(aheadDate);
+        }
+        return daysAhead;
+    }
+
     const getTiles = (psAndTs: Project[]) => {
         let tiles: Tile[] = [];
         let overdueCount = 0;
         let todayCount = 0;
         let duePeriodCount = 0;
         let openCount = 0;
+        const daysAhead = getDatesDaysAhead();
         psAndTs.forEach(pAndTs => {
             let projectTasks = pAndTs.task;
             projectTasks.forEach(task => {
-
                 let dueLabel = parseTimesFromCurrentDate(task.due_date ?? null, true)
                 if (task.status !== 'done') {
                     openCount++;
@@ -150,11 +171,11 @@ const Dashboard = () => {
                         overdueCount++;
                         break;
                     case 'TODAY':
-                        todayCount++;
+                        todayCount = daysAhead.includes(task.due_date) ? todayCount + 1 : todayCount;
                         break;
                     case 'NEXTSEVEN':
                     case 'NEXTTHIRTY':
-                        duePeriodCount++;
+                        duePeriodCount = daysAhead.includes(task.due_date) ? duePeriodCount + 1 : duePeriodCount;
                         break;
                     default:
                         break;
@@ -164,7 +185,7 @@ const Dashboard = () => {
         tiles.push(
             { key: "overdue", label: "Overdue", value: overdueCount, tone: "danger" },
             { key: "due_today", label: "Due Today", value: todayCount, tone: "warn" },
-            { key: `${timeWindow === '7d' ? 'due_7d' : 'due_30d'}`, label: `${timeWindow === '7d' ? 'Due Next 7 Days' : 'Due Next 30 Days'}`, value: duePeriodCount, tone: "info" },
+            { key: `${timeWindow === 'today' ? 'due_today' : (timeWindow === '7d' ? 'due_7d' : 'due_30d')}`, label: `${timeWindow === 'today' ? 'Due Today' : (timeWindow === '7d' ? 'Due Next 7 Days' : 'Due Next 30 Days')}`, value: timeWindow === 'today' ? todayCount : duePeriodCount, tone: "info" },
             { key: "open_tasks", label: "Open Tasks", value: openCount, tone: "success" },
         )
         return tiles;
@@ -237,7 +258,7 @@ const Dashboard = () => {
         let projectAttention: ProjectAttention[] = [];
         let openStatuses = ['todo', 'doing']
         psAndTs.forEach((pAndT: Project) => {
-            const todaysDate = Date.now();
+            const todaysDate = new Date().setHours(23, 59, 59, 999);
             const psTasks = pAndT.task
             const projectId = pAndT.id;
             const projectName = pAndT.name;
@@ -275,21 +296,6 @@ const Dashboard = () => {
         [projectsAndTasks]
     );
 
-    const getDatesSevenDaysAhead = () => {
-        let sevenDaysAhead = []
-        const today = new Date();
-        const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-        for (let $i = 0; $i < 7; $i++) {
-            let aheadDate = new Date(base);
-            aheadDate.setDate(base.getDate() + $i);
-            let year = aheadDate.getFullYear();
-            let month = String(aheadDate.getMonth() + 1).padStart(2, "0");
-            let day = String(aheadDate.getDate()).padStart(2, "0");
-            sevenDaysAhead[$i] = `${year}-${month}-${day}`;
-        }
-        return sevenDaysAhead;
-    }
     const convertDateToDayAndDayNumber = (dateString: string) => {
         const date = new Date(dateString + 'T00:00:00');
         const dayOptions: Intl.DateTimeFormatOptions = { weekday: "short" };
@@ -302,8 +308,10 @@ const Dashboard = () => {
 
     const buildUpcoming = (psAndTs: Project[]) => {
         let upcomingDays: UpcomingDay[] = [];
-        const sevenDaysAhead = getDatesSevenDaysAhead();
-        const datesToFilterBy = activeDay ? [activeDay] : sevenDaysAhead;
+        const daysAhead = getDatesDaysAhead(true);
+        const today = getStartOfDateLocal();
+        const todayDateFormatted = formatDateToYearMonthDay(today);
+        const datesToFilterBy = timeWindow === 'today' ? [todayDateFormatted] : (activeDay ? [activeDay] : daysAhead);
         datesToFilterBy.forEach((dateString) => {
             let dueCount = 0;
             psAndTs.forEach((pAndT) => {
@@ -327,7 +335,7 @@ const Dashboard = () => {
             const upcomingDays = buildUpcoming(projectsAndTasks);
             return upcomingDays
         },
-        [projectsAndTasks, activeDay]
+        [projectsAndTasks, activeDay, timeWindow]
     );
 
     return (
