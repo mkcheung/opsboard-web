@@ -9,7 +9,6 @@ import Home from '../../pages/Home/Home';
 import Login from '../../pages/Login/Login';
 import ProtectedRoute from "./ProtectedRoute";
 import Register from '../../pages/Register/Register';
-import Settings from "../../pages/Settings/Settings";
 import Projects from "../../pages/Projects/Projects";
 import ProjectDetail from "../../pages/Projects/ProjectDetail";
 
@@ -25,7 +24,6 @@ export default function AppRoutes() {
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="projects" element={<Projects />} />
                     <Route path="/projects/:projectId" element={<ProjectDetail />} />
-                    <Route path="settings" element={<Settings />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />

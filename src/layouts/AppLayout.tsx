@@ -62,9 +62,6 @@ export default function AppLayout() {
                                 <NavLink to="/projects" className={({ isActive }) => (isActive ? "navLink active" : "navLink")}>
                                     Projects
                                 </NavLink>
-                                <NavLink to="/settings" className={({ isActive }) => (isActive ? "navLink active" : "navLink")}>
-                                    Settings
-                                </NavLink>
                             </>
                         )}
                     </nav>
