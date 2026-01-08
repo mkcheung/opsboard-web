@@ -49,6 +49,8 @@ export type SortableTask = {
     created_at?: string | null;
 };
 
+export type OpenTasks = SortableTask & { id: number; project_id: number; title: string; projectName?: string };
+
 export type DayOptions = {
     weekday: string;
 }

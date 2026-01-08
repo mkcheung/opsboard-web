@@ -3,19 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../store/hooks/hooks";
 import type {
     NextAction,
+    OpenTasks,
     ProjectAttention,
     SortableTask,
     Tile,
-    UpcomingDay,
     TileKey,
     TimeWindow,
+    UpcomingDay,
 } from "./DashboardTypes";
 import {
     PRIORITY_RANK,
     STATUS_RANK
 } from "./DashboardTypes";
 import type {
-    NextTask,
     Project
 } from "../Projects/projectTypes";
 
@@ -33,12 +33,23 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const projectsAndTasks = useAppSelector((s) => s.project.projects)
 
-    // UI-only state (you’ll wire these into store logic later)
     const [timeWindow, setTimeWindow] = useState<TimeWindow>("7d");
     const [activeTile, setActiveTile] = useState<TileKey | null>(null);
     const [collapsedProjects, setCollapsedProjects] = useState<Record<string, boolean>>({});
     const [checkedTasks, setCheckedTasks] = useState<Record<string, boolean>>({});
     const [activeDay, setActiveDay] = useState<string | null>(null);
+
+    const OPEN_STATUSES = ["todo", "doing"] as const;
+
+    const isOpen = (status: string) => OPEN_STATUSES.includes(status as any);
+
+    const diffDaysFromToday = (due_date: string | null | undefined): number | null => {
+        if (!due_date) return null;
+        const todayTime = getStartOfDateLocal().getTime();
+        const [y, m, d] = due_date.split("-").map(Number);
+        const dueDateNum = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
+        return Math.floor((dueDateNum - todayTime) / MS_PER_DAY);
+    };
 
     const getBucket = (dueTime: number | null, todayStart: number, soonDays = 7): number => {
         if (dueTime == null) return 4;
@@ -171,11 +182,11 @@ const Dashboard = () => {
                         overdueCount++;
                         break;
                     case 'TODAY':
-                        todayCount = daysAhead.includes(task.due_date) ? todayCount + 1 : todayCount;
+                        todayCount = task.due_date && daysAhead.includes(task.due_date) ? todayCount + 1 : todayCount;
                         break;
                     case 'NEXTSEVEN':
                     case 'NEXTTHIRTY':
-                        duePeriodCount = daysAhead.includes(task.due_date) ? duePeriodCount + 1 : duePeriodCount;
+                        duePeriodCount = task.due_date && daysAhead.includes(task.due_date) ? duePeriodCount + 1 : duePeriodCount;
                         break;
                     default:
                         break;
@@ -200,65 +211,89 @@ const Dashboard = () => {
     );
 
     const getNextActions = (psAndTs: Project[]) => {
-        let nextTaskForEachProject: NextTask[] = [];
+        const allOpenTasks: OpenTasks[] = [];
 
-        psAndTs.forEach(pAndTs => {
-            let projectId = pAndTs.id;
-            let projectName = pAndTs.name;
-            let projectTasks = pAndTs.task;
-            if (projectTasks.length > 0) {
-                const sorted = [...projectTasks].sort(sortTasks)
-                if (!activeDay) {
-                    if (!sorted[0]?.id || !sorted[0]?.due_date || !sorted[0]?.priority) {
-                        return;
-                    }
-                    let dueLabel = parseTimesFromCurrentDate(sorted[0].due_date, false);
-                    nextTaskForEachProject.push({
-                        id: Number(sorted[0].id),
-                        title: sorted[0].title,
-                        projectId: projectId,
-                        projectName: projectName,
-                        dueLabel: dueLabel,
-                        priority: sorted[0].priority.charAt(0).toUpperCase() + sorted[0].priority.slice(1)
-                    });
-                } else {
-                    let projectIdOfTaskSelected: number | null = null;
-                    sorted.forEach((sortedTask) => {
-                        if (activeDay !== sortedTask.due_date || sortedTask.project_id === projectIdOfTaskSelected || (!sortedTask.id || !sortedTask.due_date || !sortedTask.priority)) {
-                            return;
-                        }
-                        let dueLabel = parseTimesFromCurrentDate(sortedTask.due_date, false);
-                        nextTaskForEachProject.push({
-                            id: Number(sortedTask.id),
-                            title: sortedTask.title,
-                            projectId: projectId,
-                            projectName: projectName,
-                            dueLabel: dueLabel,
-                            priority: sortedTask.priority.charAt(0).toUpperCase() + sortedTask.priority.slice(1)
-                        });
-                        projectIdOfTaskSelected = projectId;
-                    });
+        psAndTs.forEach((p) => {
+            const projectTasks = p.task ?? [];
+            projectTasks.forEach((t) => {
+                if (!isOpen(t.status)) return;
+                allOpenTasks.push({
+                    ...(t as OpenTasks),
+                    projectName: p.name,
+                });
+            });
+        });
+
+        const filtered = allOpenTasks.filter((t) => {
+            if (activeDay) {
+                return t.due_date === activeDay;
+            }
+
+            const daysFromToday = diffDaysFromToday(t.due_date);
+
+            if (activeTile) {
+                if (activeTile === "open_tasks") {
+                    return true;
+                }
+                if (daysFromToday == null)
+                    return false;
+
+                switch (activeTile) {
+                    case "overdue":
+                        return daysFromToday < 0;
+                    case "due_today":
+                        return daysFromToday === 0;
+                    case "due_7d":
+                        return daysFromToday >= 0 && daysFromToday <= 7;
+                    case "due_30d":
+                        return daysFromToday >= 0 && daysFromToday <= 30;
                 }
 
-
+                return true;
             }
+
+            if (daysFromToday == null) {
+                return false;
+            }
+            if (daysFromToday < 0) {
+                return true;
+            }
+            if (timeWindow === "today") {
+                return daysFromToday === 0;
+            }
+            if (timeWindow === "7d") {
+                return daysFromToday <= 7;
+            }
+            return daysFromToday <= 30;
         });
-        return nextTaskForEachProject;
-    }
+
+        const sorted = [...filtered].sort(sortTasks);
+
+        const top = sorted.slice(0, 12);
+
+        return top
+            .filter((t) => t.id && t.priority)
+            .map((t) => {
+                const dueLabel = t.due_date ? parseTimesFromCurrentDate(t.due_date, false) : "";
+                return {
+                    id: Number(t.id),
+                    title: t.title,
+                    projectId: t.project_id,
+                    projectName: (t as any).projectName,
+                    dueLabel: dueLabel,
+                    priority: t.priority.charAt(0).toUpperCase() + t.priority.slice(1),
+                };
+            });
+    };
 
     const nextActions: NextAction[] = useMemo(
-        () => {
-            const nextTaskForEachProject = getNextActions(projectsAndTasks);
-            return nextTaskForEachProject
-        },
-        [projectsAndTasks, activeDay]
+        () => getNextActions(projectsAndTasks),
+        [projectsAndTasks, activeDay, activeTile, timeWindow]
     );
 
     const buildProjectAttention = (psAndTs: Project[]) => {
         let projectAttention: ProjectAttention[] = [];
-        let openStatuses = ['todo', 'doing']
         psAndTs.forEach((pAndT: Project) => {
-            const todaysDate = new Date().setHours(23, 59, 59, 999);
             const psTasks = pAndT.task
             const projectId = pAndT.id;
             const projectName = pAndT.name;
@@ -266,16 +301,25 @@ const Dashboard = () => {
             let dueSoonCount = 0;
             let openCount = 0;
             psTasks.forEach((task) => {
-                if (!task.due_date) {
-                    openCount += openStatuses.includes(task.status) ? 1 : 0;
+                if (!isOpen(task.status)) {
                     return;
                 }
-                let [y, m, d] = task.due_date.split("-").map(Number);
-                let taskDueDateNum = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
-                overdueCount = taskDueDateNum < todaysDate ? overdueCount + 1 : overdueCount;
-                openCount = openStatuses.includes(task.status) ? openCount + 1 : openCount;
-                dueSoonCount = !openStatuses.includes(task.status) && !(taskDueDateNum < todaysDate) ? dueSoonCount + 1 : dueSoonCount;
+                openCount++;
 
+                if (!task.due_date) {
+                    return;
+                }
+
+                const daysFromToday = diffDaysFromToday(task.due_date);
+                if (daysFromToday == null) {
+                    return;
+                }
+
+                if (daysFromToday < 0) {
+                    overdueCount++;
+                } else if (daysFromToday <= 7) {
+                    dueSoonCount++;
+                }
             });
             projectAttention.push({
                 id: projectId,
@@ -307,35 +351,40 @@ const Dashboard = () => {
     }
 
     const buildUpcoming = (psAndTs: Project[]) => {
-        let upcomingDays: UpcomingDay[] = [];
-        const daysAhead = getDatesDaysAhead(true);
+        const upcomingDays: UpcomingDay[] = [];
+
         const today = getStartOfDateLocal();
-        const todayDateFormatted = formatDateToYearMonthDay(today);
-        const datesToFilterBy = timeWindow === 'today' ? [todayDateFormatted] : (activeDay ? [activeDay] : daysAhead);
-        datesToFilterBy.forEach((dateString) => {
+        const nextSevenDays: string[] = [];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + i + 1);
+            nextSevenDays.push(formatDateToYearMonthDay(d));
+        }
+
+        nextSevenDays.forEach((dateString) => {
             let dueCount = 0;
+
             psAndTs.forEach((pAndT) => {
-                const psTasks = pAndT.task
+                const psTasks = pAndT.task ?? [];
                 psTasks.forEach((task) => {
-                    dueCount = dateString === task.due_date ? dueCount + 1 : dueCount
+                    if (!isOpen(task.status)) return;
+                    if (dateString === task.due_date) dueCount++;
                 });
             });
-            let currentDateString = convertDateToDayAndDayNumber(dateString);
+
             upcomingDays.push({
                 id: dateString,
-                label: currentDateString,
-                dueCount: dueCount,
+                label: convertDateToDayAndDayNumber(dateString),
+                dueCount,
             });
         });
+
         return upcomingDays;
-    }
+    };
 
     const upcoming: UpcomingDay[] = useMemo(
-        () => {
-            const upcomingDays = buildUpcoming(projectsAndTasks);
-            return upcomingDays
-        },
-        [projectsAndTasks, activeDay, timeWindow]
+        () => buildUpcoming(projectsAndTasks),
+        [projectsAndTasks]
     );
 
     return (
@@ -376,7 +425,10 @@ const Dashboard = () => {
                             key={t.key}
                             type="button"
                             className={`dashTileBtn ${isActive ? "dashTileBtnActive" : ""}`}
-                            onClick={() => setActiveTile((prev) => (prev === t.key ? null : t.key))}
+                            onClick={() => {
+                                setActiveDay(null);
+                                setActiveTile((prev) => (prev === t.key ? null : t.key));
+                            }}
                             aria-label={`${t.label}: ${t.value}`}
                         >
                             <div className={`card dashTile dashTileTone-${t.tone ?? "neutral"}`}>
@@ -567,7 +619,10 @@ const Dashboard = () => {
                                     key={d.id}
                                     type="button"
                                     className={`dashUpcomingRow ${isActive ? "dashUpcomingRowActive" : ""}`}
-                                    onClick={() => setActiveDay((prev) => (prev === d.id ? null : d.id))}
+                                    onClick={() => {
+                                        setActiveTile(null);
+                                        setActiveDay((prev) => (prev === d.id ? null : d.id));
+                                    }}
                                 >
                                     <div className="dashUpcomingLeft">
                                         <div className="dashUpcomingDay">{d.label}</div>

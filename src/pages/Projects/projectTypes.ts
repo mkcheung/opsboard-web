@@ -27,13 +27,3 @@ export interface Project {
 export interface ProjectState {
     projects: Project[]
 };
-
-export type NextTask = {
-    id: number;
-    projectId: string | number;
-    projectName: string;
-    title: string;
-    dueLabel?: string;
-    due_date?: string;
-    priority: string;
-};
