@@ -1,4 +1,5 @@
 import type { AxiosInstance } from "axios";
+import { getActiveBackend } from "../shared/config/backend";
 import {
     clearToken,
     getToken
@@ -9,7 +10,7 @@ export const attachAuthInterceptor = (http: AxiosInstance) => {
         const token = getToken();
         if (token) {
             config.headers = config.headers ?? {};
-            config.headers.Authorization = `Bearer ${token}`;
+            config.headers.Authorization = `${getActiveBackend() == 'django' ? 'Token' : 'Bearer'} ${token}`;
         }
         return config;
     });

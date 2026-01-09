@@ -10,9 +10,9 @@ import { loginMessages } from "../../features/ui/toastMessages";
 import { projectActions } from "../project/projectSlice";
 
 const ENDPOINTS = {
-    me: `${getApiBaseUrl()}/api/me`,
-    login: `${getApiBaseUrl()}/api/auth/login`,
-    logout: `${getApiBaseUrl()}/api/auth/logout`,
+    me: `${getApiBaseUrl()}/api/me/`,
+    login: `${getApiBaseUrl()}/api/auth/login/`,
+    logout: `${getApiBaseUrl()}/api/auth/logout/`,
 };
 
 function* bootWorker() {

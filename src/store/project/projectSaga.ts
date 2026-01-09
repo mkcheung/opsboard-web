@@ -8,7 +8,7 @@ import type { Project } from "../../pages/Projects/projectTypes";
 
 function* loadProjects(action: ReturnType<typeof projectActions.requestProjectLoad>) {
     try {
-        const projects: Project[] = yield call(() => http.get(`${getApiBaseUrl()}/api/projects`).then(res => res.data.data.data));
+        const projects: Project[] = yield call(() => http.get(`${getApiBaseUrl()}/api/projects/`).then(res => res.data.data.data));
         yield put(projectActions.loadProjects({ projects }));
     } catch (err) {
         yield put(uiActions.toastAdded({ kind: 'error', message: 'Error loading projects!' }));
@@ -17,7 +17,7 @@ function* loadProjects(action: ReturnType<typeof projectActions.requestProjectLo
 
 function* deleteProject(action: ReturnType<typeof projectActions.requestDeleteProject>) {
     try {
-        yield call(() => http.delete(`${getApiBaseUrl()}/api/projects/${action.payload.project.id}`).then(res => res.data));
+        yield call(() => http.delete(`${getApiBaseUrl()}/api/projects/${action.payload.project.id}/`).then(res => res.data));
         yield put(uiActions.toastAdded({ kind: 'success', message: 'Project Deleted.' }));
         yield put(projectActions.requestProjectLoad());
     } catch (err) {

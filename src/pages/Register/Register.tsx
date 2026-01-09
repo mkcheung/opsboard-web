@@ -34,7 +34,7 @@ export const Register = () => {
         }
 
         try {
-            const res = await http.post("/api/auth/register", formData);
+            const res = await http.post("/api/auth/register/", formData);
             if (res.status === 201) {
                 setToken(res.data.token);
                 dispatch(uiActions.toastAdded({ kind: "success", message: loginMessages.registered }));
