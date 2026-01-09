@@ -39,9 +39,9 @@ export function CreateEditProjectDrawer({ projectToEdit, open, onClose }: Create
         try {
             let res;
             if (!isEdit) {
-                res = await http.post("/api/projects", project);
+                res = await http.post("/api/projects/", project);
             } else {
-                res = await http.put(`/api/projects/${projectToEdit.id}`, project);
+                res = await http.put(`/api/projects/${projectToEdit.id}/`, project);
             }
 
             if (res.status === 200 || res.status === 201) {

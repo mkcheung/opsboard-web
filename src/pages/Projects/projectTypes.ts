@@ -18,7 +18,7 @@ export interface Project {
     id: number;
     user_id: number;
     name: string;
-    task: Task[];
+    tasks: Task[];
     description: string;
     created_at?: string;
     updated_at?: string;

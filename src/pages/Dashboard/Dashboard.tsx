@@ -170,8 +170,9 @@ const Dashboard = () => {
         let duePeriodCount = 0;
         let openCount = 0;
         const daysAhead = getDatesDaysAhead();
+
         psAndTs.forEach(pAndTs => {
-            let projectTasks = pAndTs.task;
+            let projectTasks = pAndTs.tasks;
             projectTasks.forEach(task => {
                 let dueLabel = parseTimesFromCurrentDate(task.due_date ?? null, true)
                 if (task.status !== 'done') {
@@ -214,7 +215,7 @@ const Dashboard = () => {
         const allOpenTasks: OpenTasks[] = [];
 
         psAndTs.forEach((p) => {
-            const projectTasks = p.task ?? [];
+            const projectTasks = p.tasks ?? [];
             projectTasks.forEach((t) => {
                 if (!isOpen(t.status)) return;
                 allOpenTasks.push({
@@ -294,7 +295,7 @@ const Dashboard = () => {
     const buildProjectAttention = (psAndTs: Project[]) => {
         let projectAttention: ProjectAttention[] = [];
         psAndTs.forEach((pAndT: Project) => {
-            const psTasks = pAndT.task
+            const psTasks = pAndT.tasks
             const projectId = pAndT.id;
             const projectName = pAndT.name;
             let overdueCount = 0;
@@ -365,7 +366,7 @@ const Dashboard = () => {
             let dueCount = 0;
 
             psAndTs.forEach((pAndT) => {
-                const psTasks = pAndT.task ?? [];
+                const psTasks = pAndT.tasks ?? [];
                 psTasks.forEach((task) => {
                     if (!isOpen(task.status)) return;
                     if (dateString === task.due_date) dueCount++;

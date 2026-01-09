@@ -1,14 +1,16 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import { getApiBaseUrl } from '../../shared/config/backend'
-import { END } from "redux-saga";
 import { projectActions } from "./projectSlice";
 import { uiActions } from "../../features/ui/uiSlice";
+import { extractDataByPlatform } from "../../shared/api/extractDataByPlatform";
 import { http } from "../../shared/api/http";
 import type { Project } from "../../pages/Projects/projectTypes";
 
 function* loadProjects(action: ReturnType<typeof projectActions.requestProjectLoad>) {
     try {
-        const projects: Project[] = yield call(() => http.get(`${getApiBaseUrl()}/api/projects/`).then(res => res.data.data.data));
+        const projects: Project[] = yield call(() => http.get(`${getApiBaseUrl()}/api/projects/`).then(res => {
+            return extractDataByPlatform<Project>(res.data);
+        }));
         yield put(projectActions.loadProjects({ projects }));
     } catch (err) {
         yield put(uiActions.toastAdded({ kind: 'error', message: 'Error loading projects!' }));
