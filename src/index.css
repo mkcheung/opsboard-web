@@ -138,6 +138,19 @@ body {
   padding: 28px 0 48px;
 }
 
+.authWrap {
+  min-height: calc(100vh - 64px);
+  /* accounts for your sticky topbar height */
+  display: grid;
+  place-items: center;
+  padding: 28px 0 48px;
+  /* matches .main spacing vibe */
+}
+
+.authCard {
+  width: min(520px, 100%);
+}
+
 /* ================================
    Typography / helpers
    ================================ */

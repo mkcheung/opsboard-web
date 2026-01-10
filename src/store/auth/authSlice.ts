@@ -3,7 +3,7 @@ import {
 } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-export type AuthStatus = 'checking' | 'authenticated' | 'unauthenticated';
+export type AuthStatus = 'checking' | 'authenticated' | 'unauthenticated' | 'error' | "loading";
 
 export interface User {
     id: number | string;
